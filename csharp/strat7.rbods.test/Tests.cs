@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System;
 using System.Collections.Generic;
 
@@ -107,7 +108,10 @@ namespace strat7.rbods.test
 
         [Test]
         public void CanSort() {
-            throw new NotImplementedException();
+            int[] numbers = { 2, 1, 8, 0, 4, 3, 5, 7, 9 };
+            int[] expectedResult = { 1, 2, 3, 4, 5, 6, 7, 8 ,9 };
+            int[] result = instance.Sort(numbers);
+            Assert.AreEqual(expectedResult, result);
         }
 
         [Test]

@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading;
 
 namespace strat7.rbods {
     public class Questions {
+
+        /** Constants */
+        private const double kilometersToMiles = 0.625;
+
         /// <summary>
         /// Given an enumerable of strings, attempt to parse each string and if
         /// it is an integer, add it to the returned enumerable.
@@ -22,7 +28,13 @@ namespace strat7.rbods {
         /// <param name="source">An enumerable containing words</param>
         /// <returns></returns>
         public IEnumerable<int> ExtractNumbers(IEnumerable<string> source) {
-            throw new NotImplementedException();
+            List<int> numbers = new List<int>();
+            foreach( var item in source) {
+                if(int.TryParse(item, out int value)) {
+                    numbers.Add(value);
+                }
+            }
+            return numbers;
         }
 
         /// <summary>
@@ -67,7 +79,20 @@ namespace strat7.rbods {
         /// <param name="second">Second list of words</param>
         /// <returns></returns>
         public string LongestCommonWord(IEnumerable<string> first, IEnumerable<string> second) {
-            throw new NotImplementedException();
+            int wordLength = 0;
+            string word = "";
+            foreach(var x in first) {
+                wordLength = (x.Length > wordLength) ? x.Length : wordLength;
+                foreach(var y in second) {
+                    if(y.Length > wordLength) {
+                        wordLength = y.Length;
+                    }
+                    if(y.Length == wordLength && x == y) {
+                        word = y;
+                    }
+                }
+            }
+            return word;
         }
 
         /// <summary>
@@ -82,8 +107,9 @@ namespace strat7.rbods {
         /// </summary>
         /// <param name="km">distance in kilometers</param>
         /// <returns></returns>
+        
         public double DistanceInMiles(double km) {
-            throw new NotImplementedException();
+            return Math.Round(km*kilometersToMiles, 2);
         }
 
         /// <summary>
@@ -99,7 +125,7 @@ namespace strat7.rbods {
         /// <param name="miles">distance in miles</param>
         /// <returns></returns>
         public double DistanceInKm(double miles) {
-            throw new NotImplementedException();
+            return Math.Round(miles/kilometersToMiles, 2);
         }
 
         /// <summary>
@@ -121,7 +147,9 @@ namespace strat7.rbods {
         /// <param name="word">The word to check</param>
         /// <returns></returns>
         public bool IsPalindrome(string word) {
-            throw new NotImplementedException();
+            char[] array = word.ToCharArray();
+            Array.Reverse(array);
+            return String.Concat(array) == word;
         }
 
         /// <summary>
@@ -142,7 +170,8 @@ namespace strat7.rbods {
         /// <param name="source"></param>
         /// <returns></returns>
         public IEnumerable<object> Shuffle(IEnumerable<object> source) {
-            throw new NotImplementedException();
+            // Uses GUID for randomness
+            return (from item in source orderby Guid.NewGuid() ascending select item).ToList();
         }
 
         /// <summary>
@@ -154,7 +183,7 @@ namespace strat7.rbods {
         /// <param name="source"></param>
         /// <returns></returns>
         public int[] Sort(int[] source) {
-            throw new NotImplementedException();
+            return (from item in source orderby item descending select item).ToArray<int>();
         }
 
         /// <summary>
@@ -168,7 +197,24 @@ namespace strat7.rbods {
         /// </summary>
         /// <returns></returns>
         public int FibonacciSum() {
-            throw new NotImplementedException();
+            const int valueToNotExceed = 4000000;
+            List<int> fibonacci = new List<int>{ 0, 1 };
+            List<int> fibonacciEvenNumbers = new List<int>();
+            int firstNumber = 0, secondNumber = 1;
+            for (int i = 2; (firstNumber + secondNumber) < valueToNotExceed; i++)
+            {
+                firstNumber = fibonacci[i-2];
+                secondNumber = fibonacci[i-1];
+                fibonacci.Add(firstNumber + secondNumber);
+                if(IsEven(fibonacci[i])) {
+                    fibonacciEvenNumbers.Add(fibonacci[i]);
+                }
+            }
+            return fibonacciEvenNumbers.Sum();
+        }
+
+        private bool IsEven(int item) {
+            return item % 2 == 0;
         }
 
         /// <summary>
@@ -179,15 +225,19 @@ namespace strat7.rbods {
         /// <returns></returns>
         public IEnumerable<int> GenerateList() {
             var ret = new List<int>();
-            var numThreads = 2;
+            var numThreads = 1;
 
             Thread[] threads = new Thread[numThreads];
+
             for (var i = 0; i < numThreads; i++) {
+                
                 threads[i] = new Thread(() => {
                     var complete = false;
+                    
                     while (!complete) {
                         var next = ret.Count + 1;
-                        Thread.Sleep(new Random().Next(1, 10));
+                        Thread.Sleep(new Random().Next(1, 100));
+                        Console.WriteLine(next);
                         if (next <= 100) {
                             ret.Add(next);
                         }
